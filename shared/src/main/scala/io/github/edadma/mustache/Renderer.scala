@@ -26,13 +26,17 @@ object Renderer {
       }
 
     def render(data: Any, template: AST): Unit =
-      template match {
-        case TextAST(s)                => buf ++= s
-        case VariableAST(pos, id)      => buf ++= lookup(data, pos, id).toString
-        case SectionAST(pos, id, body) => render(lookup(data, pos, id), body)
-        //        case InvertedAST(id, body) =>
-        //        case PartialAST(file) =>
-        case SequenceAST(contents) => contents foreach (t => render(data, t))
+      data match {
+        case l: List[_] => l foreach (d => render(d, template))
+        case _ =>
+          template match {
+            case TextAST(s)                => buf ++= s
+            case VariableAST(pos, id)      => buf ++= lookup(data, pos, id).toString
+            case SectionAST(pos, id, body) => render(lookup(data, pos, id), body)
+            //        case InvertedAST(id, body) =>
+            //        case PartialAST(file) =>
+            case SequenceAST(contents) => contents foreach (t => render(data, t))
+          }
       }
 
     render(data, template)
