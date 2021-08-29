@@ -8,11 +8,9 @@ object Parser {
 
   val default = Map("start" -> "{{", "end" -> "}}")
 
-  def apply(data: OBJ, template: String, options: (String, Any)*): String = {
-    val config = default ++ options
-    val reader = CharReader.fromString(template)
-    val buf = new StringBuilder
+  def apply(data: OBJ, template: String, options: (String, Any)*): AST = parse(data, template, default ++ options)
 
+  def parse(data: OBJ, template: String, config: OBJ): AST = {
     @tailrec
     def tag(r: CharReader, buf: StringBuilder = new StringBuilder): Option[(CharReader, String)] = {
       if (r.eoi) None
@@ -40,7 +38,7 @@ object Parser {
     }
 
     @tailrec
-    def render(r: CharReader): Unit =
+    def parse(r: CharReader): Unit =
       if (r.more)
         matches(r, config("start").toString) match {
           case Some(tagrest) =>
@@ -49,7 +47,7 @@ object Parser {
                 s match {
                   case _ =>
                     println(tagrest.longErrorText(s))
-                    render(rest)
+                    parse(rest)
                   case _ => tagrest.error(s"bad tag: $s")
                 }
               case None =>
@@ -57,11 +55,15 @@ object Parser {
           case None =>
             if (r.more) {
               buf += r.ch
-              render(r.next)
+              parse(r.next)
             }
         }
 
-    render(reader)
+    def body(): AST = {
+      if (seq.)
+    }
+
+    parse(CharReader.fromString(template))
     buf.toString
   }
 
