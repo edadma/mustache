@@ -35,8 +35,10 @@ object Parser {
       matches(r, s.toList)
     }
 
-    @tailrec
-    def parse(r: CharReader, buf: StringBuilder = new StringBuilder, seq: ListBuffer[AST] = new ListBuffer): AST = {
+    def parse(r: CharReader,
+              body: Option[(String, CharReader)],
+              buf: StringBuilder = new StringBuilder,
+              seq: ListBuffer[AST] = new ListBuffer): (CharReader, AST) = {
       if (r.more) {
         matches(r, config("start").toString) match {
           case Some(tagrest) =>
@@ -61,28 +63,53 @@ object Parser {
                   }
 
                 tag match {
-                  case ("", v)  => seq += VariableAST(r, ref(v))
-                  case ("#", v) =>
-                  case (c, _)   => tagrest.error(s"unrecognized tag command: $c")
-                }
+                  case ("/", v) =>
+                    if (body.isEmpty) {
+                      println(v, r)
+                      r.error(s"end tag with no start tag: $v")
+                    }
 
-                parse(rest, buf, seq)
+                    val res =
+                      if (seq.length == 1) seq.head
+                      else SequenceAST(seq.toList)
+
+                    (rest, res)
+                  case _ =>
+                    val rest1 =
+                      tag match {
+                        case ("", v) =>
+                          seq += VariableAST(r, ref(v))
+                          rest
+                        case ("#", v) =>
+                          val (rest1, ast) = parse(rest, body = Some((v, r)))
+
+                          seq += SectionAST(r, ref(v), ast)
+                          rest1
+                        case (c, _) => tagrest.error(s"unrecognized tag command: $c")
+                      }
+
+                    parse(rest1, body, buf, seq)
+                }
               case None => r.error("unclosed tag")
             }
           case None =>
             buf += r.ch
-            parse(r.next, buf, seq)
+            parse(r.next, body, buf, seq)
         }
       } else {
+        body foreach { case (v, r) => r.error(s"unclosed section: $v") }
+
         if (buf.nonEmpty)
           seq += TextAST(buf.toString)
 
         if (seq.length == 1) seq.head
-        SequenceAST(seq.toList)
+        (r, SequenceAST(seq.toList))
       }
     }
 
-    parse(CharReader.fromString(template))
+    val (_, res) = parse(CharReader.fromString(template), body = None)
+
+    res
   }
 
 }

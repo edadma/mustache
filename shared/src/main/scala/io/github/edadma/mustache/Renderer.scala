@@ -25,11 +25,11 @@ object Renderer {
         case (v, _)       => v
       }
 
-    def render(data: Map[String, Any], template: AST): Unit =
+    def render(data: Any, template: AST): Unit =
       template match {
-        case TextAST(s)           => buf ++= s
-        case VariableAST(pos, id) => buf ++= lookup(data, pos, id).toString
-        //        case SectionAST(id, body) =>
+        case TextAST(s)                => buf ++= s
+        case VariableAST(pos, id)      => buf ++= lookup(data, pos, id).toString
+        case SectionAST(pos, id, body) => render(lookup(data, pos, id), body)
         //        case InvertedAST(id, body) =>
         //        case PartialAST(file) =>
         case SequenceAST(contents) => contents foreach (t => render(data, t))
