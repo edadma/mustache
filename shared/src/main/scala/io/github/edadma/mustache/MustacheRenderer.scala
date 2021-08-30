@@ -52,7 +52,6 @@ object MustacheRenderer {
         case _ =>
           template match {
             case TextAST(s) =>
-              print("text", s.map(_.toInt), section)
               if (section && removeSectionBlanksOpt && s.segmentLength(_ == '\n') > 0)
                 buf ++= (if (removeNonSectionBlanksOpt) s drop s.segmentLength(_ == '\n') else s.tail)
               else if (!section && removeNonSectionBlanksOpt && s.segmentLength(_ == '\n') > 0)
