@@ -1,12 +1,11 @@
 package io.github.edadma.mustache
 
 import io.github.edadma.char_reader.CharReader
-import org.graalvm.compiler.lir.LIRInstruction.Temp
 
 import scala.annotation.tailrec
 import scala.collection.mutable.ListBuffer
 
-object Parser {
+object MustacheParser {
 
   def parse(template: String, config: Map[String, Any]): AST = {
     @tailrec

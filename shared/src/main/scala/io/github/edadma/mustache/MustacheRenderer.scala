@@ -4,7 +4,7 @@ import io.github.edadma.char_reader.CharReader
 
 import scala.annotation.tailrec
 
-object Renderer {
+object MustacheRenderer {
 
   def render(data: Map[String, Any], template: AST, config: Map[String, Any]): String = {
     val buf = new StringBuilder

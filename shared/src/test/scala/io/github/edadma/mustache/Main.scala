@@ -8,6 +8,6 @@ object Main extends App {
       |{{#x}} zxcv
       | {{/x}} qwer""".stripMargin
 
-  println(apply(Map("qwer" -> List(Map("erty" -> 123), Map("erty" -> 456))), t))
+  println(processMustache(Map("qwer" -> List(Map("erty" -> 123), Map("erty" -> 456))), t))
 
 }

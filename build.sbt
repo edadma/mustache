@@ -10,7 +10,7 @@ ThisBuild /     scalacOptions ++=
 lazy val mustache = crossProject(JSPlatform, JVMPlatform, NativePlatform).in(file(".")).
   settings(
     name := "mustache",
-    version := "0.1.1",
+    version := "0.1.2",
     scalaVersion := "2.13.6",
     scalacOptions ++=
       Seq(
