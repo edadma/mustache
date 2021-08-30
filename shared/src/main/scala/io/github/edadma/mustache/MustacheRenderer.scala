@@ -44,33 +44,43 @@ object MustacheRenderer {
 
     def render(data: Any, template: AST): Unit =
       data match {
-        case l: List[_] => l foreach (d => render(d, template))
+        case l: List[_] =>
+          for (d <- l) {
+            render(d, template)
+            section = true
+          }
         case _ =>
           template match {
             case TextAST(s) =>
-              if (!(section && removeSectionBlanksOpt && s.forall(_ == '\n')))
+              print("text", s.map(_.toInt), section)
+              if (section && removeSectionBlanksOpt && s.segmentLength(_ == '\n') > 0) {
+                buf ++= (if (removeNonSectionBlanksOpt) s drop s.segmentLength(_ == '\n') else s.tail)
+                println(" section nl dropped")
+              } else if (!section && removeNonSectionBlanksOpt && s.segmentLength(_ == '\n') > 0) {
+                buf ++= s drop (s.segmentLength(_ == '\n') - 1)
+                println(" text nl dropped")
+              } else {
+                println
                 buf ++= s
+              }
 
               section = false
             case VariableAST(pos, id)  => append(lookup(data, pos, id).toString)
             case UnescapedAST(pos, id) => buf ++= lookup(data, pos, id).toString
             case SectionAST(pos, id, body) =>
+              println("section start")
               section = true
               render(lookup(data, pos, id), body)
-            //        case InvertedAST(id, body) =>
-            //        case PartialAST(file) =>
+              //        case InvertedAST(id, body) =>
+              //        case PartialAST(file) =>
+              section = true
+              println("section end")
             case SequenceAST(contents) => contents foreach (t => render(data, t))
-          }
-
-          template match {
-            case _: SectionAST | _: InvertedAST => section = true
-            case _                              =>
           }
       }
 
     render(data, template)
-    scala.io.Source.fromString(buf.toString).getLines() map (l => if (trimOpt) l.trim else l) filterNot (l =>
-      removeNonSectionBlanksOpt && l.isEmpty) mkString "\n"
+    scala.io.Source.fromString(buf.toString).getLines() map (l => if (trimOpt) l.trim else l) mkString "\n"
   }
 
 }

@@ -33,7 +33,7 @@ class Tests extends AnyFreeSpec with Matchers {
             |* {{age}}
             |* {{company}}
             |* {{& company}}
-            |""".stripMargin
+            |""".trim.stripMargin
     ) shouldBe
       """
         |* Chris
