@@ -6,7 +6,7 @@ import scala.annotation.tailrec
 
 object MustacheRenderer {
 
-  def render(data: Map[String, Any], template: AST, config: Map[String, Any]): String = {
+  def render(data: Any, template: AST, config: Map[String, Any]): String = {
     val buf = new StringBuilder
     val htmlEscapedOpt = config("htmlEscaped").asInstanceOf[Boolean]
     val trimOpt = config("trim").asInstanceOf[Boolean]

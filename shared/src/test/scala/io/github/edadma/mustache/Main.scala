@@ -1,19 +1,25 @@
 package io.github.edadma.mustache
 
+import io.github.edadma.json.DefaultJSONReader
+
 object Main extends App {
 
   val t =
     """
       |{{#data}}
-      |{{#section}}
       |  {{name}} -> {{value}}
-      |{{/section}}
       |{{/data}}
       |""".trim.stripMargin
-  val data = DefaultJSONReader.from
+  val json =
+    """
+      |{
+      |  "data": [
+      |    {"name": "a", "value": 1},
+      |    {"name": "b", "value": 2}
+      |  ]
+      |}""".stripMargin
+  val data = DefaultJSONReader.fromString(json)
 
-  {"data": [{"section: [{"name": "a", "value": 1}, {"name": "b", "value": 2}]}]}
-   */
-  println(processMustache(Map("qwer" -> List(Map("erty" -> 123), Map("erty" -> 456))), t))
+  println(processMustache(data, t))
 
 }

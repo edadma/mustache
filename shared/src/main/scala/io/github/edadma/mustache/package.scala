@@ -11,7 +11,7 @@ package object mustache {
         "removeNonSectionBlanks" -> true,
         "htmlEscaped" -> true)
 
-  def processMustache(data: Map[String, Any], template: String, options: (String, Any)*): String = {
+  def processMustache(data: Any, template: String, options: (String, Any)*): String = {
     val config = defaults ++ options
 
     MustacheRenderer.render(data, MustacheParser.parse(template, config), config)
