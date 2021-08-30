@@ -53,28 +53,22 @@ object MustacheRenderer {
           template match {
             case TextAST(s) =>
               print("text", s.map(_.toInt), section)
-              if (section && removeSectionBlanksOpt && s.segmentLength(_ == '\n') > 0) {
+              if (section && removeSectionBlanksOpt && s.segmentLength(_ == '\n') > 0)
                 buf ++= (if (removeNonSectionBlanksOpt) s drop s.segmentLength(_ == '\n') else s.tail)
-                println(" section nl dropped")
-              } else if (!section && removeNonSectionBlanksOpt && s.segmentLength(_ == '\n') > 0) {
+              else if (!section && removeNonSectionBlanksOpt && s.segmentLength(_ == '\n') > 0)
                 buf ++= s drop (s.segmentLength(_ == '\n') - 1)
-                println(" text nl dropped")
-              } else {
-                println
+              else
                 buf ++= s
-              }
 
               section = false
             case VariableAST(pos, id)  => append(lookup(data, pos, id).toString)
             case UnescapedAST(pos, id) => buf ++= lookup(data, pos, id).toString
             case SectionAST(pos, id, body) =>
-              println("section start")
               section = true
               render(lookup(data, pos, id), body)
               //        case InvertedAST(id, body) =>
               //        case PartialAST(file) =>
               section = true
-              println("section end")
             case SequenceAST(contents) => contents foreach (t => render(data, t))
           }
       }

@@ -63,10 +63,8 @@ object MustacheParser {
 
                 tag match {
                   case ("/", v) =>
-                    if (body.isEmpty) {
-                      println(v, r)
+                    if (body.isEmpty)
                       r.error(s"end tag with no start tag: $v")
-                    }
 
                     val res =
                       if (seq.length == 1) seq.head
