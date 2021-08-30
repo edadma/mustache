@@ -18,7 +18,7 @@ class Tests extends AnyFreeSpec with Matchers {
   }
 
   "lines with spaces and blanks (no trim)" in {
-    processMustache(Map(), " asdf\n\nqwer \n", "trim" -> false) shouldBe " asdf\n\nqwer \n"
+    processMustache(Map(), " asdf\n\nqwer \n", "trim" -> false) shouldBe " asdf\nqwer "
   }
 
   "simple variable" in {
