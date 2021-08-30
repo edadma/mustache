@@ -1,5 +1,11 @@
 ThisBuild / licenses += "ISC" -> url("https://opensource.org/licenses/ISC")
 ThisBuild / versionScheme := Some("semver-spec")
+ThisBuild /     scalacOptions ++=
+  Seq(
+    "-deprecation", "-feature", "-unchecked",
+    "-language:postfixOps", "-language:implicitConversions", "-language:existentials", "-language:dynamics",
+    "-Xasync"
+  )
 
 lazy val mustache = crossProject(JSPlatform, JVMPlatform, NativePlatform).in(file(".")).
   settings(
@@ -20,7 +26,7 @@ lazy val mustache = crossProject(JSPlatform, JVMPlatform, NativePlatform).in(fil
     libraryDependencies ++=
       Seq(
         "io.github.edadma" %%% "cross-platform" % "0.1.0",
-        "io.github.edadma" %%% "char-reader" % "0.1.1"
+        "io.github.edadma" %%% "char-reader" % "0.1.2"
       ),
     publishMavenStyle := true,
     Test / publishArtifact := false,

@@ -80,12 +80,16 @@ object Parser {
                         case ("", v) =>
                           seq += VariableAST(r, ref(v))
                           rest
+                        case ("&", v) =>
+                          seq += UnescapedAST(r, ref(v))
+                          rest
                         case ("#", v) =>
                           val (rest1, ast) = parse(rest, body = Some((v, r)))
 
                           seq += SectionAST(r, ref(v), ast)
                           rest1
-                        case (c, _) => tagrest.error(s"unrecognized tag command: $c")
+                        case ("!", _) => rest
+                        case (c, _)   => tagrest.error(s"unrecognized tag command: $c")
                       }
 
                     parse(rest1, body, buf, seq)
