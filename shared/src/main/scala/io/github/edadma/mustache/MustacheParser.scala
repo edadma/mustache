@@ -54,9 +54,7 @@ object MustacheParser {
 
                 val tag =
                   s.trim split "\\s+" match {
-                    case Array(v) =>
-                      if (!v.head.isLetter) (v.head.toString, v.tail)
-                      else ("", v)
+                    case Array(v)    => (v.takeWhile(!_.isLetter), v.dropWhile(!_.isLetter))
                     case Array(c, a) => (c, a)
                     case _           => tagrest.error(s"bad tag: $s")
                   }
