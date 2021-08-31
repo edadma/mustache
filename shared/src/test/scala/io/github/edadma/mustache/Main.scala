@@ -45,11 +45,13 @@ object Main extends App {
     """
       |{
       |  "repo": []
-      |}""".stripMargin
+      |}""".stripMargin //[{"name": "asdf"}]
   val data = DefaultJSONReader.fromString(json)
 
-  println(prettyPrint(MustacheParser.parse(t, defaultsOptions)))
+//  println(prettyPrint(MustacheParser.parse(t, defaultsOptions)))
   println(
-    processMustache(data, t, "trim" -> false, "removeNonSectionBlanks" -> false /*, "removeSectionBlanks" -> true*/ ))
+    processMustache(
+      data,
+      t /*, "trim" -> false*/ /*, "removeNonSectionBlanks" -> false*/ /*, "removeSectionBlanks" -> true*/ ))
 
 }
