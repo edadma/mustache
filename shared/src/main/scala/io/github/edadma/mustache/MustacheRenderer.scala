@@ -25,10 +25,7 @@ object MustacheRenderer {
         case (m: Map[_, _], hd :: tl) =>
           m.asInstanceOf[Map[String, Any]] get hd match {
             case Some(value) => lookup(value, pos, tl)
-            case None =>
-              config("miss") match {
-                case "empty" => missing(hd)
-              }
+            case None        => missing(hd)
           }
         case (_, hd :: _) => missing(hd)
         case (v, _)       => v
@@ -88,10 +85,11 @@ object MustacheRenderer {
             case SectionAST(pos, id, body) =>
               section = true
 
-              val v = lookup(data, pos, id)
-
-              if (v != false && v != Nil)
-                render(v, body)
+              lookup(data, pos, id) match {
+                case false | Nil =>
+//                case f: Function
+                case v => render(v, body)
+              }
 
               section = true
             case InvertedSectionAST(pos, id, body) =>
