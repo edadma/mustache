@@ -4,14 +4,6 @@ import io.github.edadma.json.DefaultJSONReader
 
 object Main extends App {
 
-//  val t =
-//    """
-//      |{{#data}}
-//      |{{#section}}
-//      |  {{name}} -> {{value}}
-//      |{{/section}}
-//      |{{/data}}
-//      |""".trim.stripMargin
   val t =
     """
     |{{#data}}
@@ -20,7 +12,6 @@ object Main extends App {
     |{{/section}}
     |{{/data}}
     |""".trim.stripMargin
-//  val t = " asdf\n\nqwer \n"
   val json =
     """
     |{
