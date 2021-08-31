@@ -34,6 +34,20 @@ object MustacheParser {
       matches(r, s.toList)
     }
 
+    def text(s: String): List[AST] = {
+      val l = s.toList
+      val buf = new ListBuffer[AST]
+
+      def text(l: List[Char]): Unit = {
+        l match {
+          case Nil =>
+          case _   => l.takeWhile()
+        }
+
+        buf.toList
+      }
+    }
+
     def parse(r: CharReader,
               body: Option[(String, CharReader)],
               buf: StringBuilder = new StringBuilder,
