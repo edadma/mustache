@@ -7,6 +7,36 @@ import scala.collection.mutable.ListBuffer
 
 object MustacheParser {
 
+  private[mustache] def text(s: String): List[AST] = {
+    require(s.nonEmpty)
+
+    val buf = new ListBuffer[AST]
+
+    def nls(s: String): Unit = buf ++= Seq.fill(s.count(_ == '\n'))(NewlineAST)
+
+    def isNewline(c: Char) = c == '\n' || c == '\r'
+
+    @tailrec
+    def text(from: Int): Unit =
+      if (isNewline(s(from)))
+        s.indexWhere(c => !isNewline(c), from) match {
+          case -1 => nls(s.substring(from, s.length))
+          case totext =>
+            nls(s.substring(from, totext))
+            text(totext)
+        } else {
+        s.indexWhere(isNewline, from) match {
+          case -1 => buf += TextAST(s.substring(from, s.length))
+          case tonl =>
+            buf += TextAST(s.substring(from, tonl))
+            text(tonl)
+        }
+      }
+
+    text(0)
+    buf.toList
+  }
+
   def parse(template: String, config: Map[String, Any]): AST = {
     @tailrec
     def matchTag(r: CharReader, buf: StringBuilder = new StringBuilder): Option[(CharReader, String)] = {
@@ -34,20 +64,6 @@ object MustacheParser {
       matches(r, s.toList)
     }
 
-    def text(s: String): List[AST] = {
-      val l = s.toList
-      val buf = new ListBuffer[AST]
-
-      def text(l: List[Char]): Unit = {
-        l match {
-          case Nil =>
-          case _   => l.takeWhile()
-        }
-
-        buf.toList
-      }
-    }
-
     def parse(r: CharReader,
               body: Option[(String, CharReader)],
               buf: StringBuilder = new StringBuilder,
@@ -56,7 +72,7 @@ object MustacheParser {
         matches(r, config("start").toString) match {
           case Some(tagrest) =>
             if (buf.nonEmpty) {
-              seq += TextAST(buf.toString)
+              seq ++= text(buf.toString)
               buf.clear()
             }
 
@@ -113,7 +129,7 @@ object MustacheParser {
         body foreach { case (v, r) => r.error(s"unclosed section: $v") }
 
         if (buf.nonEmpty)
-          seq += TextAST(buf.toString)
+          seq ++= text(buf.toString)
 
         if (seq.length == 1) seq.head
         (r, SequenceAST(seq.toList))

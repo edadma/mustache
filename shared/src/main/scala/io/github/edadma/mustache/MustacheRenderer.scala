@@ -41,6 +41,7 @@ object MustacheRenderer {
         buf ++= s
 
     var section: Boolean = false
+    var nl: Boolean = false
 
     def render(data: Any, template: AST): Unit =
       data match {
@@ -52,16 +53,29 @@ object MustacheRenderer {
         case _ =>
           template match {
             case TextAST(s) =>
-              if (section && removeSectionBlanksOpt && s.segmentLength(_ == '\n') > 0)
-                buf ++= (if (removeNonSectionBlanksOpt) s drop s.segmentLength(_ == '\n') else s.tail)
-              else if (!section && removeNonSectionBlanksOpt && s.segmentLength(_ == '\n') > 0)
-                buf ++= s drop (s.segmentLength(_ == '\n') - 1)
-              else
-                buf ++= s
-
+              buf ++= s
               section = false
-            case VariableAST(pos, id)  => append(lookup(data, pos, id).toString)
-            case UnescapedAST(pos, id) => buf ++= lookup(data, pos, id).toString
+              nl = false
+            case NewlineAST =>
+              if (removeSectionBlanksOpt && section) {
+                // remove
+              } else if (!section && removeNonSectionBlanksOpt && nl) {
+                // remove
+              } else {
+                buf += '\n'
+                section = false
+              }
+
+              nl = true
+            case VariableAST(pos, id) =>
+              append(lookup(data, pos, id).toString)
+              section = false
+              nl = false
+            case UnescapedAST(pos, id) =>
+              buf ++=
+                lookup(data, pos, id).toString
+              section = false
+              nl = false
             case SectionAST(pos, id, body) =>
               section = true
               render(lookup(data, pos, id), body)

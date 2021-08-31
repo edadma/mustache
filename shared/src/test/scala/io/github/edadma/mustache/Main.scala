@@ -54,7 +54,7 @@ object Main extends App {
     |}""".stripMargin
   val data = DefaultJSONReader.fromString(json)
 
-  println(processMustache(data, t, "removeNonSectionBlanks" -> false))
+//  println(processMustache(data, t, "removeNonSectionBlanks" -> false))
 
 }
 
