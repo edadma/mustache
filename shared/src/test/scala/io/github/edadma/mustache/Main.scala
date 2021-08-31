@@ -41,7 +41,7 @@ object Main extends App {
   val json =
     """
       |{
-      |  "person?": false
+      |  
       |}""".stripMargin //"person?": { "name": "Jon" }
   val data = DefaultJSONReader.fromString(json)
 
@@ -49,6 +49,7 @@ object Main extends App {
   println(
     processMustache(
       data,
-      t /*, "trim" -> false*/ /*, "removeNonSectionBlanks" -> false*/ /*, "removeSectionBlanks" -> true*/ ))
+      t,
+      "missingIsException" -> true /*, "trim" -> false*/ /*, "removeNonSectionBlanks" -> false*/ /*, "removeSectionBlanks" -> true*/ ))
 
 }

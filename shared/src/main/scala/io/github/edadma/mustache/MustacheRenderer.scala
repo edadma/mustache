@@ -12,9 +12,14 @@ object MustacheRenderer {
     val trimOpt = config("trim").asInstanceOf[Boolean]
     val removeSectionBlanksOpt = config("removeSectionBlanks").asInstanceOf[Boolean]
     val removeNonSectionBlanksOpt = config("removeNonSectionBlanks").asInstanceOf[Boolean]
+    val missingIsException = config("missingIsException").asInstanceOf[Boolean]
 
     @tailrec
-    def lookup(data: Any, pos: CharReader, id: List[String]): Any =
+    def lookup(data: Any, pos: CharReader, id: List[String]): Any = {
+      def missing(name: String): String =
+        if (missingIsException) pos.error(s"missing variable $name")
+        else ""
+
       (data, id) match {
         case (_, Nil) => data
         case (m: Map[_, _], hd :: tl) =>
@@ -22,12 +27,13 @@ object MustacheRenderer {
             case Some(value) => lookup(value, pos, tl)
             case None =>
               config("miss") match {
-                case "empty" => ""
+                case "empty" => missing(hd)
               }
           }
-        case (v, _ :: _) => ""
-        case (v, _)      => v
+        case (_, hd :: _) => missing(hd)
+        case (v, _)       => v
       }
+    }
 
     def append(s: String): Unit =
       if (htmlEscapedOpt) {
