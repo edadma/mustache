@@ -81,4 +81,25 @@ class Tests extends AnyFreeSpec with Matchers {
         """.trim.stripMargin
   }
 
+  "inverted sections" in {
+    processMustache(
+      DefaultJSONReader.fromString("""
+                                     |{
+                                     |  "repo": []
+                                     |}
+          """.stripMargin),
+      """
+        |{{#repo}}
+        |  <b>{{name}}</b>
+        |{{/repo}}
+        |{{^repo}}
+        |  No repos :(
+        |{{/repo}}
+        |""".trim.stripMargin
+    ) shouldBe
+      """
+        |No repos :(
+        """.trim.stripMargin
+  }
+
 }

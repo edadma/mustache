@@ -81,14 +81,18 @@ object MustacheRenderer {
               nl = false
             case SectionAST(pos, id, body) =>
               section = true
-
               val v = lookup(data, pos, id)
 
               if (v != false && v != Nil)
                 render(v, body)
             case InvertedAST(pos, id, body) =>
-              //        case PartialAST(file) =>
+              val v = lookup(data, pos, id)
+
+              if (v == "" || v == false || v == Nil)
+                render(v, body)
+
               section = true
+            //        case PartialAST(file) =>
             case SequenceAST(contents) => contents foreach (t => render(data, t))
           }
       }

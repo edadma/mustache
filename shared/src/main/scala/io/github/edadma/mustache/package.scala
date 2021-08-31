@@ -2,7 +2,7 @@ package io.github.edadma
 
 package object mustache {
 
-  private val defaults =
+  private[mustache] val defaultsOptions =
     Map("start" -> "{{",
         "end" -> "}}",
         "miss" -> "empty",
@@ -12,7 +12,7 @@ package object mustache {
         "htmlEscaped" -> true)
 
   def processMustache(data: Any, template: String, options: (String, Any)*): String = {
-    val config = defaults ++ options
+    val config = defaultsOptions ++ options
 
     MustacheRenderer.render(data, MustacheParser.parse(template, config), config)
   }

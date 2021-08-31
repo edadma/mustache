@@ -29,6 +29,7 @@ lazy val mustache = crossProject(JSPlatform, JVMPlatform, NativePlatform).in(fil
   ).
   jvmSettings(
     libraryDependencies += "org.scala-js" %% "scalajs-stubs" % "1.0.0" % "provided",
+    libraryDependencies += "xyz.hyperreal" %% "pretty" % "0.1.0" % "test"
   ).
   nativeSettings(
     nativeLinkStubs := true
