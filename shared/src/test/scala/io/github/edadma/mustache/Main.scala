@@ -12,28 +12,15 @@ object Main extends App {
 //      |{{/section}}
 //      |{{/data}}
 //      |""".trim.stripMargin
-//  val json =
-//    """
-//      |{
-//      |  "data": [
-//      |    {
-//      |      "section": [
-//      |        {"name": "a", "value": 1},
-//      |        {"name": "b", "value": 2}
-//      |      ]
-//      |    }
-//      |  ]
-//      |}""".stripMargin
-//  val t =
-//    """
-//    |{{#data}}
-//    |{{#section}}
-//    |  {{name}} -> {{value}}
-//    |{{/section}}
-//    |
-//    |{{/data}}
-//    |""".trim.stripMargin
-  val t = " asdf\n\nqwer \n"
+  val t =
+    """
+    |{{#data}}
+    |{{#section}}
+    |  {{name}} -> {{value}}
+    |{{/section}}
+    |{{/data}}
+    |""".trim.stripMargin
+//  val t = " asdf\n\nqwer \n"
   val json =
     """
     |{
@@ -54,7 +41,8 @@ object Main extends App {
     |}""".stripMargin
   val data = DefaultJSONReader.fromString(json)
 
-//  println(processMustache(data, t, "removeNonSectionBlanks" -> false))
+  println(
+    processMustache(data, t, "trim" -> false, "removeNonSectionBlanks" -> false /*, "removeSectionBlanks" -> true*/ ))
 
 }
 

@@ -53,21 +53,24 @@ object MustacheRenderer {
         case _ =>
           template match {
             case TextAST(s) =>
+//              print(s"[$s]")
               buf ++= s
               section = false
               nl = false
             case NewlineAST =>
+//              print(s"[\\n: section = $section]")
               if (removeSectionBlanksOpt && section) {
                 // remove
-              } else if (!section && removeNonSectionBlanksOpt && nl) {
+              } else if (removeNonSectionBlanksOpt && !section && nl) {
+//                print("(r)")
                 // remove
               } else {
                 buf += '\n'
-                section = false
               }
 
               nl = true
             case VariableAST(pos, id) =>
+//              print(s"<${lookup(data, pos, id).toString}>")
               append(lookup(data, pos, id).toString)
               section = false
               nl = false
