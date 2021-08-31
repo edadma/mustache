@@ -45,5 +45,3 @@ object Main extends App {
     processMustache(data, t, "trim" -> false, "removeNonSectionBlanks" -> false /*, "removeSectionBlanks" -> true*/ ))
 
 }
-
-// todo: 2 unit tests are failing because newlines are lumped together with text and shouldn't be. the parser should break up lines
