@@ -113,6 +113,11 @@ object MustacheParser {
 
                           seq += SectionAST(r, ref(v), ast)
                           rest1
+                        case ("^", v) =>
+                          val (rest1, ast) = parse(rest, body = Some((v, r)))
+
+                          seq += InvertedAST(r, ref(v), ast)
+                          rest1
                         case ("!", _) => rest
                         case (c, _)   => tagrest.error(s"unrecognized tag command: $c")
                       }

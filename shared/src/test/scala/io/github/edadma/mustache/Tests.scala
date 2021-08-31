@@ -1,5 +1,6 @@
 package io.github.edadma.mustache
 
+import io.github.edadma.json.DefaultJSONReader
 import org.scalatest.freespec.AnyFreeSpec
 import org.scalatest.matchers.should.Matchers
 
@@ -40,6 +41,25 @@ class Tests extends AnyFreeSpec with Matchers {
         |*
         |* &lt;b&gt;GitHub&lt;/b&gt;
         |* <b>GitHub</b>
+        """.trim.stripMargin
+  }
+
+  "sections: false values or empty lists" in {
+    processMustache(
+      DefaultJSONReader.fromString("""
+          |{
+          |  "person": false
+          |}
+          """.stripMargin),
+      """
+        |Shown.
+        |{{#person}}
+        |  Never shown!
+        |{{/person}}
+        |""".trim.stripMargin
+    ) shouldBe
+      """
+        |Shown.
         """.trim.stripMargin
   }
 
