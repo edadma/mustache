@@ -25,8 +25,8 @@ object MustacheRenderer {
                 case "empty" => ""
               }
           }
-        case (v, hd :: _) => pos.error(s"key '$hd' not found in '$v'")
-        case (v, _)       => v
+        case (v, _ :: _) => ""
+        case (v, _)      => v
       }
 
     def append(s: String): Unit =

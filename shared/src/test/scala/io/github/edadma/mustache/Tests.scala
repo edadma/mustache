@@ -26,7 +26,7 @@ class Tests extends AnyFreeSpec with Matchers {
     processMustache(Map("asdf" -> 345), "qwer {{asdf}} zxcv") shouldBe "qwer 345 zxcv"
   }
 
-  "variable miss" in {
+  "missing variable" in {
     processMustache(
       Map("name" -> "Chris", "company" -> "<b>GitHub</b>"),
       """
@@ -78,6 +78,24 @@ class Tests extends AnyFreeSpec with Matchers {
     ) shouldBe
       """
         |Hi Jon!
+        """.trim.stripMargin
+  }
+
+  "sections: missing variable" in {
+    processMustache(
+      DefaultJSONReader.fromString("""
+                                     |{
+                                     |  
+                                     |}
+          """.stripMargin),
+      """
+        |{{#person?}}
+        |  Hi {{name}}!
+        |{{/person?}}
+        |""".trim.stripMargin
+    ) shouldBe
+      """
+        |Hi !
         """.trim.stripMargin
   }
 

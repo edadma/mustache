@@ -34,18 +34,15 @@ object Main extends App {
 //    |}""".stripMargin
   val t =
     """
-    |{{#repo}}
-    |  <b>{{name}}</b>
-    |{{/repo}}
-    |{{^repo}}
-    |  No repos :(
-    |{{/repo}}
+    |{{#person?}}
+    |  Hi {{name}}!
+    |{{/person?}}
     |""".trim.stripMargin
   val json =
     """
       |{
-      |  "repo": []
-      |}""".stripMargin //[{"name": "asdf"}]
+      |  "person?": false
+      |}""".stripMargin //"person?": { "name": "Jon" }
   val data = DefaultJSONReader.fromString(json)
 
 //  println(prettyPrint(MustacheParser.parse(t, defaultsOptions)))
