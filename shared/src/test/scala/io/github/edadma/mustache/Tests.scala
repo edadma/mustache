@@ -1,34 +1,35 @@
 package io.github.edadma.mustache
 
-import io.github.edadma.json.DefaultJSONReader
+import io.github.edadma.json.{DefaultJSONReader, Obj}
+
 import org.scalatest.freespec.AnyFreeSpec
 import org.scalatest.matchers.should.Matchers
 
 class Tests extends AnyFreeSpec with Matchers {
 
   "empty" in {
-    processMustache(Map(), "") shouldBe ""
+    processMustache(Obj(), "") shouldBe ""
   }
 
   "simple string" in {
-    processMustache(Map(), "asdf") shouldBe "asdf"
+    processMustache(Obj(), "asdf") shouldBe "asdf"
   }
 
   "lines with spaces and blanks" in {
-    processMustache(Map(), " asdf\n\nqwer \n") shouldBe "asdf\nqwer"
+    processMustache(Obj(), " asdf\n\nqwer \n") shouldBe "asdf\nqwer"
   }
 
   "lines with spaces and blanks (no trim)" in {
-    processMustache(Map(), " asdf\n\nqwer \n", "trim" -> false) shouldBe " asdf\nqwer "
+    processMustache(Obj(), " asdf\n\nqwer \n", "trim" -> false) shouldBe " asdf\nqwer "
   }
 
   "simple variable" in {
-    processMustache(Map("asdf" -> 345), "qwer {{asdf}} zxcv") shouldBe "qwer 345 zxcv"
+    processMustache(Obj("asdf" -> 345), "qwer {{asdf}} zxcv") shouldBe "qwer 345 zxcv"
   }
 
   "missing variable" in {
     processMustache(
-      Map("name" -> "Chris", "company" -> "<b>GitHub</b>"),
+      Obj("name" -> "Chris", "company" -> "<b>GitHub</b>"),
       """
             |* {{name}}
             |* {{age}}
@@ -117,6 +118,27 @@ class Tests extends AnyFreeSpec with Matchers {
     ) shouldBe
       """
         |No repos :(
+        """.trim.stripMargin
+  }
+
+  "parent variable" in {
+    processMustache(
+      DefaultJSONReader.fromString("""
+                                     |{
+                                     |  "a": {
+                                     |    "b": 3
+                                     |  },
+                                     |  "c": 4
+                                     |}
+                                    """.stripMargin),
+      """
+        |{{#a}}
+        |a.b: {{b}} c: {{_.c}}
+        |{{/a}}
+        |""".trim.stripMargin
+    ) shouldBe
+      """
+        |a.b: 3 c: 4
         """.trim.stripMargin
   }
 

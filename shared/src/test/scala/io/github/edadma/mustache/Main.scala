@@ -34,15 +34,18 @@ object Main extends App {
 //    |}""".stripMargin
   val t =
     """
-    |{{#person?}}
-    |  Hi {{name}}!
-    |{{/person?}}
+    |{{#a}}
+    |a.b: {{b}} c: {{_.c}}
+    |{{/a}}
     |""".trim.stripMargin
   val json =
     """
       |{
-      |  
-      |}""".stripMargin //"person?": { "name": "Jon" }
+      |  "a": {
+      |    "b": 3
+      |  },
+      |  "c": 4
+      |}""".stripMargin
   val data = DefaultJSONReader.fromString(json)
 
 //  println(prettyPrint(MustacheParser.parse(t, defaultsOptions)))

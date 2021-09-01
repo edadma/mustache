@@ -1,6 +1,7 @@
 package io.github.edadma.mustache
 
 import io.github.edadma.char_reader.CharReader
+import io.github.edadma.json.Obj
 
 import scala.annotation.tailrec
 
@@ -21,9 +22,9 @@ object MustacheRenderer {
         else ""
 
       (data, id) match {
-        case (_, Nil) => data
-        case (m: Map[_, _], hd :: tl) =>
-          m.asInstanceOf[Map[String, Any]] get hd match {
+        case (m: Obj, "_" :: tl) => lookup(m.parent, pos, tl)
+        case (m: Obj, hd :: tl) =>
+          m get hd match {
             case Some(value) => lookup(value, pos, tl)
             case None        => missing(hd)
           }
@@ -87,8 +88,7 @@ object MustacheRenderer {
 
               lookup(data, pos, id) match {
                 case false | Nil =>
-//                case f: Function
-                case v => render(v, body)
+                case v           => render(v, body)
               }
 
               section = true

@@ -64,6 +64,8 @@ object MustacheParser {
       matches(r, s.toList)
     }
 
+    def isNameChar(c: Char) = c.isLetter || c == '_'
+
     def parse(r: CharReader,
               body: Option[(String, CharReader)],
               buf: StringBuilder = new StringBuilder,
@@ -84,7 +86,7 @@ object MustacheParser {
 
                 val tag =
                   s.trim split "\\s+" match {
-                    case Array(v)    => (v.takeWhile(!_.isLetter), v.dropWhile(!_.isLetter))
+                    case Array(v)    => (v.takeWhile(!isNameChar(_)), v.dropWhile(!isNameChar(_)))
                     case Array(c, a) => (c, a)
                     case _           => tagrest.error(s"bad tag: $s")
                   }
