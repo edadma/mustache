@@ -94,7 +94,9 @@ object MustacheRenderer {
                 partials get file match {
                   case Some(ast) => ast
                   case None =>
-                    val ast = MustacheParser.parse(util.Using(scala.io.Source.fromFile(file))(_.mkString).get, config)
+                    val ast =
+                      MustacheParser.parse(util.Using(scala.io.Source.fromFile(s"$file.mustache"))(_.mkString).get,
+                                           config)
 
                     partials(file) = ast
                     ast

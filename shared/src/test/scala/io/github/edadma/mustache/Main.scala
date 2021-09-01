@@ -34,19 +34,19 @@ object Main extends App {
 //    |}""".stripMargin
   val t =
     """
-    |{{#repo}}
-    |  {{name}}, {{_._.asdf}}
-    |{{/repo}}
+    |<h2>Names</h2>
+    |{{#names}}
+    |  {{> user}}
+    |{{/names}}
     |""".trim.stripMargin
   val hash =
     """
       |{
-      |  "repo": [
+      |  "names": [
       |    { "name": "resque" },
       |    { "name": "hub" },
       |    { "name": "rip" }
-      |  ],
-      |  "asdf": 123
+      |  ]
       |}
      """.stripMargin
   val data = DefaultJSONReader.fromString(hash)
