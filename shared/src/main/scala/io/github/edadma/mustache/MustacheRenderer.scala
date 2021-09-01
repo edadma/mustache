@@ -4,11 +4,13 @@ import io.github.edadma.char_reader.CharReader
 import io.github.edadma.json
 
 import scala.annotation.tailrec
+import scala.collection.mutable
 
 object MustacheRenderer {
 
   def render(data: Any, template: AST, config: Map[String, Any]): String = {
     val buf = new StringBuilder
+    val partials = mutable.HashMap[String, AST]()
     val htmlEscapedOpt = config("htmlEscaped").asInstanceOf[Boolean]
     val trimOpt = config("trim").asInstanceOf[Boolean]
     val removeSectionBlanksOpt = config("removeSectionBlanks").asInstanceOf[Boolean]
@@ -84,6 +86,21 @@ object MustacheRenderer {
               nl = false
             case UnescapedAST(pos, id) =>
               buf ++= lookup(data, pos, id).toString
+              section = false
+              nl = false
+            case PartialAST(pos, file) =>
+              render(
+                data,
+                partials get file match {
+                  case Some(ast) => ast
+                  case None =>
+                    val ast = MustacheParser.parse(util.Using(scala.io.Source.fromFile(file))(_.mkString).get, config)
+
+                    partials(file) = ast
+                    ast
+                }
+              )
+
               section = false
               nl = false
             case SectionAST(pos, id, body) =>

@@ -146,7 +146,7 @@ class Tests extends AnyFreeSpec with Matchers {
         """.trim.stripMargin
   }
 
-  "parent variable" in {
+  "immediate parent" in {
     processMustache(
       DefaultJSONReader.fromString("""
                                      |{
@@ -165,6 +165,31 @@ class Tests extends AnyFreeSpec with Matchers {
       """
         |a.b: 3 c: 4
         """.trim.stripMargin
+  }
+
+  "parent through list" in {
+    processMustache(
+      DefaultJSONReader.fromString("""
+                                     |{
+                                     |  "repo": [
+                                     |    { "name": "resque" },
+                                     |    { "name": "hub" },
+                                     |    { "name": "rip" }
+                                     |  ],
+                                     |  "asdf": 123
+                                     |}
+                                    """.stripMargin),
+      """
+        |{{#repo}}
+        |  {{name}}, {{_._.asdf}}
+        |{{/repo}}
+      """.trim.stripMargin
+    ) shouldBe
+      """
+        |resque, 123
+        |hub, 123
+        |rip, 123
+      """.trim.stripMargin
   }
 
 }

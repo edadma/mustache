@@ -110,6 +110,9 @@ object MustacheParser {
                         case ("&", v) =>
                           seq += UnescapedAST(r, ref(v))
                           rest
+                        case (">", v) =>
+                          seq += PartialAST(r, v)
+                          rest
                         case ("#", v) =>
                           val (rest1, ast) = parse(rest, body = Some((v, r)))
 

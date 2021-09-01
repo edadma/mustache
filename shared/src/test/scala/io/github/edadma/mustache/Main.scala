@@ -35,7 +35,7 @@ object Main extends App {
   val t =
     """
     |{{#repo}}
-    |  {{_._.asdf}}
+    |  {{name}}, {{_._.asdf}}
     |{{/repo}}
     |""".trim.stripMargin
   val hash =
