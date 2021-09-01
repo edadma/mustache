@@ -1,7 +1,7 @@
 package io.github.edadma.mustache
 
 import io.github.edadma.char_reader.CharReader
-import io.github.edadma.json.Obj
+import io.github.edadma.json
 
 import scala.annotation.tailrec
 
@@ -18,17 +18,17 @@ object MustacheRenderer {
     @tailrec
     def lookup(data: Any, pos: CharReader, id: List[String]): Any = {
       def missing(name: String): String =
-        if (missingIsException) pos.error(s"missing variable $name")
+        if (missingIsException) pos.error(s"missing variable '$name'")
         else ""
 
       (data, id) match {
-        case (m: Obj, "_" :: tl) =>
-          m.parent match {
-            case null => pos.error(s"object has no parent: $m")
+        case (o: json.Aggregate, "_" :: tl) =>
+          o.parent match {
+            case null => pos.error(s"object has no parent: $o")
             case p    => lookup(p, pos, tl)
           }
-        case (m: Obj, hd :: tl) =>
-          m get hd match {
+        case (o: json.Object, hd :: tl) =>
+          o get hd match {
             case Some(value) => lookup(value, pos, tl)
             case None        => missing(hd)
           }
@@ -53,8 +53,8 @@ object MustacheRenderer {
 
     def render(data: Any, template: AST): Unit =
       data match {
-        case l: List[_] =>
-          for (d <- l) {
+        case a: json.Array =>
+          for (d <- a) {
             render(d, template)
             section = true
           }
@@ -89,10 +89,10 @@ object MustacheRenderer {
             case SectionAST(pos, id, body) =>
               section = true
 
-              lookup(data, pos, id) match {
-                case false | Nil =>
-                case v           => render(v, body)
-              }
+              val v = lookup(data, pos, id)
+
+              if (!(v == false || v.isInstanceOf[json.Array] && v.asInstanceOf[json.Array].isEmpty))
+                render(v, body)
 
               section = true
             case InvertedSectionAST(pos, id, body) =>
@@ -100,7 +100,7 @@ object MustacheRenderer {
 
               val v = lookup(data, pos, id)
 
-              if (v == "" || v == false || v == Nil)
+              if (v == "" || v == false || v.isInstanceOf[json.Array] && v.asInstanceOf[json.Array].isEmpty)
                 render(false, body)
 
               section = true

@@ -1,6 +1,7 @@
 package io.github.edadma.mustache
 
-import io.github.edadma.json.{DefaultJSONReader, Obj}
+import io.github.edadma.json.DefaultJSONReader
+import io.github.edadma.json
 
 import org.scalatest.freespec.AnyFreeSpec
 import org.scalatest.matchers.should.Matchers
@@ -8,28 +9,28 @@ import org.scalatest.matchers.should.Matchers
 class Tests extends AnyFreeSpec with Matchers {
 
   "empty" in {
-    processMustache(Obj(), "") shouldBe ""
+    processMustache(json.Object(), "") shouldBe ""
   }
 
   "simple string" in {
-    processMustache(Obj(), "asdf") shouldBe "asdf"
+    processMustache(json.Object(), "asdf") shouldBe "asdf"
   }
 
   "lines with spaces and blanks" in {
-    processMustache(Obj(), " asdf\n\nqwer \n") shouldBe "asdf\nqwer"
+    processMustache(json.Object(), " asdf\n\nqwer \n") shouldBe "asdf\nqwer"
   }
 
   "lines with spaces and blanks (no trim)" in {
-    processMustache(Obj(), " asdf\n\nqwer \n", "trim" -> false) shouldBe " asdf\nqwer "
+    processMustache(json.Object(), " asdf\n\nqwer \n", "trim" -> false) shouldBe " asdf\nqwer "
   }
 
   "simple variable" in {
-    processMustache(Obj("asdf" -> 345), "qwer {{asdf}} zxcv") shouldBe "qwer 345 zxcv"
+    processMustache(json.Object("asdf" -> 345), "qwer {{asdf}} zxcv") shouldBe "qwer 345 zxcv"
   }
 
   "missing variable" in {
     processMustache(
-      Obj("name" -> "Chris", "company" -> "<b>GitHub</b>"),
+      json.Object("name" -> "Chris", "company" -> "<b>GitHub</b>"),
       """
             |* {{name}}
             |* {{age}}
@@ -42,6 +43,30 @@ class Tests extends AnyFreeSpec with Matchers {
         |*
         |* &lt;b&gt;GitHub&lt;/b&gt;
         |* <b>GitHub</b>
+        """.trim.stripMargin
+  }
+
+  "sections: non-empty lists" in {
+    processMustache(
+      DefaultJSONReader.fromString("""
+                                     |{
+                                     |  "repo": [
+                                     |    { "name": "resque" },
+                                     |    { "name": "hub" },
+                                     |    { "name": "rip" }
+                                     |  ]
+                                     |}
+                                   """.stripMargin),
+      """
+        |{{#repo}}
+        |  <b>{{name}}</b>
+        |{{/repo}}
+        """.trim.stripMargin
+    ) shouldBe
+      """
+        |<b>resque</b>
+        |<b>hub</b>
+        |<b>rip</b>
         """.trim.stripMargin
   }
 

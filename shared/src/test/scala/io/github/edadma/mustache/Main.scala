@@ -1,7 +1,7 @@
 package io.github.edadma.mustache
 
+import io.github.edadma.json
 import io.github.edadma.json.DefaultJSONReader
-
 import xyz.hyperreal.pretty._
 
 object Main extends App {
@@ -34,21 +34,24 @@ object Main extends App {
 //    |}""".stripMargin
   val t =
     """
-    |{{#a}}
-    |a.b: {{b}} c: {{&_._}}
-    |{{/a}}
+    |{{#repo}}
+    |  {{_._.asdf}}
+    |{{/repo}}
     |""".trim.stripMargin
-  val json =
+  val hash =
     """
       |{
-      |  "a": {
-      |    "b": 3
-      |  },
-      |  "c": 4
-      |}""".stripMargin
-  val data = DefaultJSONReader.fromString(json)
+      |  "repo": [
+      |    { "name": "resque" },
+      |    { "name": "hub" },
+      |    { "name": "rip" }
+      |  ],
+      |  "asdf": 123
+      |}
+     """.stripMargin
+  val data = DefaultJSONReader.fromString(hash)
 
-//  println(prettyPrint(MustacheParser.parse(t, defaultsOptions)))
+///  println(prettyPrint(MustacheParser.parse(t, defaultsOptions)))
   println(
     processMustache(
       data,
