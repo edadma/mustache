@@ -35,7 +35,7 @@ object Main extends App {
   val t =
     """
     |{{#a}}
-    |a.b: {{b}} c: {{_.c}}
+    |a.b: {{b}} c: {{&_._}}
     |{{/a}}
     |""".trim.stripMargin
   val json =

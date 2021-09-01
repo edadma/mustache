@@ -22,7 +22,11 @@ object MustacheRenderer {
         else ""
 
       (data, id) match {
-        case (m: Obj, "_" :: tl) => lookup(m.parent, pos, tl)
+        case (m: Obj, "_" :: tl) =>
+          m.parent match {
+            case null => pos.error(s"object has no parent: $m")
+            case p    => lookup(p, pos, tl)
+          }
         case (m: Obj, hd :: tl) =>
           m get hd match {
             case Some(value) => lookup(value, pos, tl)
@@ -79,8 +83,7 @@ object MustacheRenderer {
               section = false
               nl = false
             case UnescapedAST(pos, id) =>
-              buf ++=
-                lookup(data, pos, id).toString
+              buf ++= lookup(data, pos, id).toString
               section = false
               nl = false
             case SectionAST(pos, id, body) =>

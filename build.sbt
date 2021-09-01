@@ -4,7 +4,7 @@ ThisBuild / versionScheme := Some("semver-spec")
 lazy val mustache = crossProject(JSPlatform, JVMPlatform, NativePlatform).in(file(".")).
   settings(
     name := "mustache",
-    version := "0.1.9",
+    version := "0.1.10",
     scalaVersion := "2.13.6",
     scalacOptions ++=
       Seq(
@@ -21,7 +21,7 @@ lazy val mustache = crossProject(JSPlatform, JVMPlatform, NativePlatform).in(fil
       Seq(
         "io.github.edadma" %%% "cross-platform" % "0.1.0",
         "io.github.edadma" %%% "char-reader" % "0.1.2",
-        "io.github.edadma" %%% "json" % "0.1.5"
+        "io.github.edadma" %%% "json" % "0.1.6"
       ),
     publishMavenStyle := true,
     Test / publishArtifact := false,
