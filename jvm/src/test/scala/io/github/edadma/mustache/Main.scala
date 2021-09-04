@@ -6,24 +6,28 @@ import xyz.hyperreal.pretty._
 
 object Main extends App {
 
-  val t =
-    """
-    |{{#musketeers}}
-    |* {{.}}
-    |{{/musketeers}}
-    |""".trim.stripMargin
   val hash =
     """
       |{
-      |  "musketeers": ["Athos", "Aramis", "Porthos", "D'Artagnan"]
+      |  "repo": [
+      |    { "name": "resque" },
+      |    { "name": "hub" },
+      |    { "name": "rip" }
+      |  ],
+      |  "asdf": 123
       |}
      """.stripMargin
+  val t =
+    """
+    |{{#repo}}
+    |  {{name}}, {{_}}
+    |{{/repo}}
+    |""".trim.stripMargin
   val data = DefaultJSONReader.fromString(hash)
   val res =
     processMustache(
       data,
       t,
-      predefs = List("user" -> MustacheParser.parse("<strong>{{name}}</strong>", defaultOptions)),
 //      List(
       /*"missingIsException" -> true*/ /*, "trim" -> false*/ /*, "removeNonSectionBlanks" -> false*/ /*, "removeSectionBlanks" -> true*/
     )

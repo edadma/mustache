@@ -219,4 +219,26 @@ class Tests extends AnyFreeSpec with Matchers {
       """.trim.stripMargin
   }
 
+  "dot" in {
+    processMustache(
+      DefaultJSONReader.fromString("""
+                                     |{
+                                     |  "name": {
+                                     |    "first": "Simon",
+                                     |    "last": "Haley"
+                                     |  },
+                                     |  "age": "73"
+                                     |}
+                                    """.stripMargin),
+      """
+        |* {{name.first}} {{name.last}}
+        |* {{age}}
+      """.trim.stripMargin,
+    ) shouldBe
+      """
+        |* Simon Haley
+        |* 73
+      """.trim.stripMargin
+  }
+
 }
