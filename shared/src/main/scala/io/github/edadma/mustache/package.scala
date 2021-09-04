@@ -2,7 +2,7 @@ package io.github.edadma
 
 package object mustache {
 
-  private[mustache] val defaultsOptions =
+  private[mustache] val defaultOptions =
     Map(
       "start" -> "{{",
       "end" -> "}}",
@@ -14,10 +14,14 @@ package object mustache {
       "missingIsException" -> false
     )
 
-  def processMustache(data: Any, template: String, options: (String, Any)*): String = {
-    val config = defaultsOptions ++ options
+  def processMustache(data: Any,
+                      template: String,
+                      paths: Map[String, String] = Map(),
+                      predefs: List[(String, AST)] = Nil,
+                      options: List[(String, Any)] = Nil): String = {
+    val config = defaultOptions ++ options
 
-    MustacheRenderer.render(data, MustacheParser.parse(template, config), config)
+    MustacheRenderer.render(data, MustacheParser.parse(template, config), config, paths, predefs)
   }
 
 }

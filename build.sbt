@@ -19,9 +19,9 @@ lazy val mustache = crossProject(JSPlatform, JVMPlatform, NativePlatform).in(fil
     libraryDependencies += "org.scalatest" %%% "scalatest" % "3.2.9" % "test",
     libraryDependencies ++=
       Seq(
-        "io.github.edadma" %%% "cross-platform" % "0.1.0",
-        "io.github.edadma" %%% "char-reader" % "0.1.2",
-        "io.github.edadma" %%% "json" % "0.1.8"
+        "io.github.edadma" %%% "cross-platform" % "0.1.1",
+        "io.github.edadma" %%% "char-reader" % "0.1.3",
+        "io.github.edadma" %%% "json" % "0.1.9"
       ),
     publishMavenStyle := true,
     Test / publishArtifact := false,

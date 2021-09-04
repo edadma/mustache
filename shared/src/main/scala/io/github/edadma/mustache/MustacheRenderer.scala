@@ -1,16 +1,21 @@
 package io.github.edadma.mustache
 
 import io.github.edadma.char_reader.CharReader
-import io.github.edadma.json
+import io.github.edadma.{cross_platform, json}
 
 import scala.annotation.tailrec
+
 import scala.collection.mutable
 
 object MustacheRenderer {
 
-  def render(data: Any, template: AST, config: Map[String, Any]): String = {
+  def render(data: Any,
+             template: AST,
+             config: Map[String, Any],
+             paths: Map[String, String] = Map(),
+             predefs: List[(String, AST)] = Nil): String = {
     val buf = new StringBuilder
-    val partials = mutable.HashMap[String, AST]()
+    val partials = mutable.HashMap[String, AST]() ++= predefs
     val htmlEscapedOpt = config("htmlEscaped").asInstanceOf[Boolean]
     val trimOpt = config("trim").asInstanceOf[Boolean]
     val removeSectionBlanksOpt = config("removeSectionBlanks").asInstanceOf[Boolean]
@@ -89,14 +94,19 @@ object MustacheRenderer {
               section = false
               nl = false
             case PartialAST(pos, file) =>
+              val partial =
+                paths get file match {
+                  case Some(p) => p
+                  case None    => file
+                }
+
               render(
                 data,
                 partials get file match {
                   case Some(ast) => ast
                   case None =>
                     val ast =
-                      MustacheParser.parse(util.Using(scala.io.Source.fromFile(s"$file.mustache"))(_.mkString).get,
-                                           config)
+                      MustacheParser.parse(cross_platform.readFile(s"$partial.mustache"), config)
 
                     partials(file) = ast
                     ast

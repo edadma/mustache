@@ -21,7 +21,7 @@ class Tests extends AnyFreeSpec with Matchers {
   }
 
   "lines with spaces and blanks (no trim)" in {
-    processMustache(json.Object(), " asdf\n\nqwer \n", "trim" -> false) shouldBe " asdf\nqwer "
+    processMustache(json.Object(), " asdf\n\nqwer \n", options = List("trim" -> false)) shouldBe " asdf\nqwer "
   }
 
   "simple variable" in {
@@ -189,6 +189,33 @@ class Tests extends AnyFreeSpec with Matchers {
         |resque, 123
         |hub, 123
         |rip, 123
+      """.trim.stripMargin
+  }
+
+  "partials" in {
+    processMustache(
+      DefaultJSONReader.fromString("""
+                                     |{
+                                     |  "names": [
+                                     |    { "name": "resque" },
+                                     |    { "name": "hub" },
+                                     |    { "name": "rip" }
+                                     |  ]
+                                     |}
+                                    """.stripMargin),
+      """
+        |<h2>Names</h2>
+        |{{#names}}
+        |  {{> user}}
+        |{{/names}}
+      """.trim.stripMargin,
+      predefs = List("user" -> MustacheParser.parse("<strong>{{name}}</strong>", defaultOptions))
+    ) shouldBe
+      """
+        |<h2>Names</h2>
+        |<strong>resque</strong>
+        |<strong>hub</strong>
+        |<strong>rip</strong>
       """.trim.stripMargin
   }
 
