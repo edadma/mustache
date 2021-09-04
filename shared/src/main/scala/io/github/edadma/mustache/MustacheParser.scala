@@ -107,6 +107,9 @@ object MustacheParser {
                         case ("", v) =>
                           seq += VariableAST(r, ref(v))
                           rest
+                        case (".", "") =>
+                          seq += DataAST
+                          rest
                         case ("&", v) =>
                           seq += UnescapedAST(r, ref(v))
                           rest

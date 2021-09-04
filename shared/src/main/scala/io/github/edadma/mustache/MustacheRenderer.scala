@@ -84,6 +84,10 @@ object MustacheRenderer {
               }
 
               nl = true
+            case DataAST =>
+              append(data.toString)
+              section = false
+              nl = false
             case VariableAST(pos, id) =>
 //              print(s"<${lookup(data, pos, id).toString}>")
               append(lookup(data, pos, id).toString)
