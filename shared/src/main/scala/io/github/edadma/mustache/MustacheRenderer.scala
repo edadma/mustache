@@ -40,6 +40,7 @@ object MustacheRenderer {
             case None        => missing(hd)
           }
         case (_, hd :: _) => missing(hd)
+        case (null, _)    => ""
         case (v, _)       => v
       }
     }
