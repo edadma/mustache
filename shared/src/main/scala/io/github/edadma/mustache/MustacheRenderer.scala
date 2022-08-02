@@ -9,12 +9,14 @@ import scala.collection.mutable
 
 object MustacheRenderer {
 
-  def render(data: Any,
-             template: AST,
-             config: Map[String, Any],
-             paths: Map[String, String] = Map(),
-             predefs: List[(String, AST)] = Nil): String = {
-    val buf = new StringBuilder
+  def render(
+      data: Any,
+      template: AST,
+      config: Map[String, Any],
+      paths: Map[String, String] = Map(),
+      predefs: List[(String, AST)] = Nil,
+  ): String = {
+    val buf = new mutable.StringBuilder
     val partials = mutable.HashMap[String, AST]() ++= predefs
     val htmlEscapedOpt = config("htmlEscaped").asInstanceOf[Boolean]
     val trimOpt = config("trim").asInstanceOf[Boolean]
@@ -59,6 +61,11 @@ object MustacheRenderer {
     var section: Boolean = false
     var nl: Boolean = false
 
+    def asString(datum: Any): String =
+      datum match
+        case d: Double if d.isWhole => "%.0f" format d
+        case _                      => String.valueOf(datum)
+
     def render(data: Any, template: AST): Unit =
       data match {
         case a: json.Array =>
@@ -86,19 +93,26 @@ object MustacheRenderer {
 
               nl = true
             case DataAST =>
-              append(data.toString)
+              append(asString(data))
+              section = false
+              nl = false
+            case AttributeAST(pos, attr) =>
+              attr match {
+                case _ => pos.error(s"unrecognized loop item attribute: '$attr'")
+              }
+
               section = false
               nl = false
             case VariableAST(pos, id) =>
 //              print(s"<${lookup(data, pos, id).toString}>")
-              append(lookup(data, pos, id).toString)
+              append(asString(lookup(data, pos, id)))
               section = false
               nl = false
             case UnescapedAST(pos, id) =>
-              buf ++= lookup(data, pos, id).toString
+              buf ++= asString(lookup(data, pos, id))
               section = false
               nl = false
-            case PartialAST(pos, file) =>
+            case PartialAST(_, file) =>
               val partial =
                 paths get file match {
                   case Some(p) => p
@@ -115,7 +129,7 @@ object MustacheRenderer {
 
                     partials(file) = ast
                     ast
-                }
+                },
               )
 
               section = false
@@ -125,8 +139,9 @@ object MustacheRenderer {
 
               val v = lookup(data, pos, id)
 
-              if (!(v == false || v.isInstanceOf[json.Array] && v.asInstanceOf[json.Array].isEmpty))
+              if (!(v == false || v.isInstanceOf[json.Array] && v.asInstanceOf[json.Array].isEmpty)) {
                 render(v, body)
+              }
 
               section = true
             case InvertedSectionAST(pos, id, body) =>

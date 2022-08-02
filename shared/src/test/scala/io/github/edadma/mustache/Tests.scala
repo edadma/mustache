@@ -219,7 +219,7 @@ class Tests extends AnyFreeSpec with Matchers {
       """.trim.stripMargin
   }
 
-  "dot" in {
+  "dotted names" in {
     processMustache(
       DefaultJSONReader.fromString("""
                                      |{

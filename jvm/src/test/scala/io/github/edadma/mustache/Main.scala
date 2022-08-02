@@ -2,7 +2,6 @@ package io.github.edadma.mustache
 
 import io.github.edadma.json
 import io.github.edadma.json.DefaultJSONReader
-import xyz.hyperreal.pretty._
 
 object Main extends App {
 

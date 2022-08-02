@@ -11,14 +11,16 @@ package object mustache {
       "removeSectionBlanks" -> true,
       "removeNonSectionBlanks" -> true,
       "htmlEscaped" -> true,
-      "missingIsException" -> false
+      "missingIsException" -> false,
     )
 
-  def processMustache(data: Any,
-                      template: String,
-                      paths: Map[String, String] = Map(),
-                      predefs: List[(String, AST)] = Nil,
-                      options: List[(String, Any)] = Nil): String = {
+  def processMustache(
+      data: Any,
+      template: String,
+      paths: Map[String, String] = Map(),
+      predefs: List[(String, AST)] = Nil,
+      options: List[(String, Any)] = Nil,
+  ): String = {
     val config = defaultOptions ++ options
 
     MustacheRenderer.render(data, MustacheParser.parse(template, config), config, paths, predefs)

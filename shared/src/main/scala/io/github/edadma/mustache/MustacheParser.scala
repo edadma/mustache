@@ -3,6 +3,7 @@ package io.github.edadma.mustache
 import io.github.edadma.char_reader.CharReader
 
 import scala.annotation.tailrec
+import scala.collection.mutable
 import scala.collection.mutable.ListBuffer
 
 object MustacheParser {
@@ -24,7 +25,8 @@ object MustacheParser {
           case totext =>
             nls(s.substring(from, totext))
             text(totext)
-        } else {
+        }
+      else {
         s.indexWhere(isNewline, from) match {
           case -1 => buf += TextAST(s.substring(from, s.length))
           case tonl =>
@@ -39,7 +41,10 @@ object MustacheParser {
 
   def parse(template: String, config: Map[String, Any]): AST = {
     @tailrec
-    def matchTag(r: CharReader, buf: StringBuilder = new StringBuilder): Option[(CharReader, String)] = {
+    def matchTag(
+        r: CharReader,
+        buf: mutable.StringBuilder = new mutable.StringBuilder,
+    ): Option[(CharReader, String)] = {
       if (r.eoi) None
       else {
         matches(r, config("end").toString) match {
@@ -66,10 +71,12 @@ object MustacheParser {
 
     def isNameChar(c: Char) = c.isLetter || c == '_'
 
-    def parse(r: CharReader,
-              body: Option[(String, CharReader)],
-              buf: StringBuilder = new StringBuilder,
-              seq: ListBuffer[AST] = new ListBuffer): (CharReader, AST) = {
+    def parse(
+        r: CharReader,
+        body: Option[(String, CharReader)],
+        buf: mutable.StringBuilder = new mutable.StringBuilder,
+        seq: ListBuffer[AST] = new ListBuffer,
+    ): (CharReader, AST) = {
       if (r.more) {
         matches(r, config("start").toString) match {
           case Some(tagrest) =>
@@ -94,7 +101,7 @@ object MustacheParser {
                 tag match {
                   case ("/", v) =>
                     if (body.isEmpty)
-                      r.error(s"end tag with no start tag: $v")
+                      tagrest.error(s"end tag with no start tag: $v")
 
                     val res =
                       if (seq.length == 1) seq.head
@@ -105,26 +112,29 @@ object MustacheParser {
                     val rest1 =
                       tag match {
                         case ("", v) =>
-                          seq += VariableAST(r, ref(v))
+                          seq += VariableAST(tagrest, ref(v))
                           rest
                         case (".", "") =>
                           seq += DataAST
                           rest
+                        case (".", att) =>
+                          seq += AttributeAST(tagrest, att)
+                          rest
                         case ("&", v) =>
-                          seq += UnescapedAST(r, ref(v))
+                          seq += UnescapedAST(tagrest, ref(v))
                           rest
                         case (">", v) =>
-                          seq += PartialAST(r, v)
+                          seq += PartialAST(tagrest, v)
                           rest
                         case ("#", v) =>
-                          val (rest1, ast) = parse(rest, body = Some((v, r)))
+                          val (rest1, ast) = parse(rest, body = Some((v, tagrest)))
 
-                          seq += SectionAST(r, ref(v), ast)
+                          seq += SectionAST(tagrest, ref(v), ast)
                           rest1
                         case ("^", v) =>
-                          val (rest1, ast) = parse(rest, body = Some((v, r)))
+                          val (rest1, ast) = parse(rest, body = Some((v, tagrest)))
 
-                          seq += InvertedSectionAST(r, ref(v), ast)
+                          seq += InvertedSectionAST(tagrest, ref(v), ast)
                           rest1
                         case ("!", _) => rest
                         case (c, _)   => tagrest.error(s"unrecognized tag command: $c")
