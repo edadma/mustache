@@ -36,7 +36,7 @@ class Tests extends AnyFreeSpec with Matchers {
             |* {{age}}
             |* {{company}}
             |* {{& company}}
-            |""".trim.stripMargin
+            |""".trim.stripMargin,
     ) shouldBe
       """
         |* Chris
@@ -61,7 +61,7 @@ class Tests extends AnyFreeSpec with Matchers {
         |{{#repo}}
         |  <b>{{name}}</b>
         |{{/repo}}
-        """.trim.stripMargin
+        """.trim.stripMargin,
     ) shouldBe
       """
         |<b>resque</b>
@@ -82,7 +82,7 @@ class Tests extends AnyFreeSpec with Matchers {
         |{{#person}}
         |  Never shown!
         |{{/person}}
-        |""".trim.stripMargin
+        |""".trim.stripMargin,
     ) shouldBe
       """
         |Shown.
@@ -100,7 +100,7 @@ class Tests extends AnyFreeSpec with Matchers {
         |{{#person?}}
         |  Hi {{name}}!
         |{{/person?}}
-        |""".trim.stripMargin
+        |""".trim.stripMargin,
     ) shouldBe
       """
         |Hi Jon!
@@ -118,7 +118,7 @@ class Tests extends AnyFreeSpec with Matchers {
         |{{#person?}}
         |  Hi {{name}}!
         |{{/person?}}
-        |""".trim.stripMargin
+        |""".trim.stripMargin,
     ) shouldBe
       """
         |Hi !
@@ -139,7 +139,7 @@ class Tests extends AnyFreeSpec with Matchers {
         |{{^repo}}
         |  No repos :(
         |{{/repo}}
-        |""".trim.stripMargin
+        |""".trim.stripMargin,
     ) shouldBe
       """
         |No repos :(
@@ -160,7 +160,7 @@ class Tests extends AnyFreeSpec with Matchers {
         |{{#a}}
         |a.b: {{b}} c: {{_.c}}
         |{{/a}}
-        |""".trim.stripMargin
+        |""".trim.stripMargin,
     ) shouldBe
       """
         |a.b: 3 c: 4
@@ -183,7 +183,7 @@ class Tests extends AnyFreeSpec with Matchers {
         |{{#repo}}
         |  {{name}}, {{_._.asdf}}
         |{{/repo}}
-      """.trim.stripMargin
+      """.trim.stripMargin,
     ) shouldBe
       """
         |resque, 123
@@ -209,7 +209,7 @@ class Tests extends AnyFreeSpec with Matchers {
         |  {{> user}}
         |{{/names}}
       """.trim.stripMargin,
-      predefs = List("user" -> MustacheParser.parse("<strong>{{name}}</strong>", defaultOptions))
+      predefs = List("user" -> MustacheParser.parse("<strong>{{name}}</strong>", defaultOptions)),
     ) shouldBe
       """
         |<h2>Names</h2>

@@ -7,8 +7,8 @@ lazy val mustache = crossProject(JSPlatform, JVMPlatform, NativePlatform)
   .in(file("."))
   .settings(
     name := "mustache",
-    version := "0.1.13",
-    scalaVersion := "3.1.3",
+    version := "0.1.14",
+    scalaVersion := "3.2.0",
     scalacOptions ++=
       Seq(
         "-deprecation",
@@ -27,8 +27,8 @@ lazy val mustache = crossProject(JSPlatform, JVMPlatform, NativePlatform)
     libraryDependencies += "com.github.scopt" %% "scopt" % "4.1.0",
     libraryDependencies ++=
       Seq(
-        "io.github.edadma" %%% "char-reader" % "0.1.10",
-        "io.github.edadma" %%% "json" % "0.1.13",
+        "io.github.edadma" %%% "char-reader" % "0.1.11",
+        "io.github.edadma" %%% "json" % "0.1.14",
       ),
     publishMavenStyle := true,
     Test / publishArtifact := false,
